@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TranslateAnything — Traduci qualsiasi file</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌍</text></svg>">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="logo">🌍 TranslateAnything</h1>
+      <button id="themeToggle" class="btn-icon" title="Cambia tema" aria-label="Cambia tema">🌙</button>
+    </header>
+
+    <!-- Upload Zone -->
+    <section id="uploadSection" class="section">
+      <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-label="Carica file">
+        <div class="drop-zone__icon">📁</div>
+        <p class="drop-zone__title">Trascina i tuoi file qui</p>
+        <p class="drop-zone__subtitle">oppure clicca per sfogliare</p>
+        <p class="drop-zone__formats">EPUB · TXT · SRT · VTT · DOCX · PDF · HTML · JSON</p>
+        <input type="file" id="fileInput" accept=".epub,.txt,.srt,.vtt,.docx,.pdf,.html,.htm,.json" multiple hidden>
+      </div>
+
+      <!-- File Info (shown after upload) -->
+      <div id="fileInfo" class="file-info hidden">
+        <div class="file-info__icon" id="fileIcon">📄</div>
+        <div class="file-info__details">
+          <p class="file-info__name" id="fileName">—</p>
+          <p class="file-info__meta" id="fileMeta">—</p>
+        </div>
+        <button id="removeFile" class="btn-icon" title="Rimuovi file">✕</button>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settingsSection" class="section hidden">
+      <div class="settings-row">
+        <div class="setting">
+          <label for="sourceLang">Lingua originale</label>
+          <select id="sourceLang">
+            <option value="auto" selected>🔍 Auto-detect</option>
+            <option value="de">🇩🇪 Tedesco</option>
+            <option value="en">🇬🇧 Inglese</option>
+            <option value="fr">🇫🇷 Francese</option>
+            <option value="es">🇪🇸 Spagnolo</option>
+            <option value="pt">🇵🇹 Portoghese</option>
+            <option value="ru">🇷🇺 Russo</option>
+            <option value="zh">🇨🇳 Cinese</option>
+            <option value="ja">🇯🇵 Giapponese</option>
+            <option value="ko">🇰🇷 Coreano</option>
+            <option value="ar">🇸🇦 Arabo</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="nl">🇳🇱 Olandese</option>
+            <option value="pl">🇵🇱 Polacco</option>
+            <option value="sv">🇸🇪 Svedese</option>
+            <option value="tr">🇹🇷 Turco</option>
+            <option value="uk">🇺🇦 Ucraino</option>
+            <option value="ro">🇷🇴 Rumeno</option>
+          </select>
+        </div>
+        <div class="setting-arrow">→</div>
+        <div class="setting">
+          <label for="targetLang">Lingua di arrivo</label>
+          <select id="targetLang">
+            <option value="it" selected>🇮🇹 Italiano</option>
+            <option value="en">🇬🇧 Inglese</option>
+            <option value="de">🇩🇪 Tedesco</option>
+            <option value="fr">🇫🇷 Francese</option>
+            <option value="es">🇪🇸 Spagnolo</option>
+            <option value="pt">🇵🇹 Portoghese</option>
+            <option value="ru">🇷🇺 Russo</option>
+            <option value="zh">🇨🇳 Cinese</option>
+            <option value="ja">🇯🇵 Giapponese</option>
+            <option value="ko">🇰🇷 Coreano</option>
+            <option value="ar">🇸🇦 Arabo</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="nl">🇳🇱 Olandese</option>
+            <option value="pl">🇵🇱 Polacco</option>
+            <option value="sv">🇸🇪 Svedese</option>
+            <option value="tr">🇹🇷 Turco</option>
+            <option value="uk">🇺🇦 Ucraino</option>
+            <option value="ro">🇷🇴 Rumeno</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Engine Selection -->
+      <div class="engine-select">
+        <label>Motore di traduzione</label>
+        <div class="engine-options">
+          <label class="radio-label">
+            <input type="radio" name="engine" value="auto" checked>
+            <span>⚡ Automatico <small>(consigliato)</small></span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="engine" value="mymemory">
+            <span>📝 Solo MyMemory</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="engine" value="gemini">
+            <span>🤖 Usa IA (Gemini Flash)</span>
+          </label>
+        </div>
+        <div id="geminiKeyBox" class="gemini-key hidden">
+          <label for="geminiKey">API Key Google AI Studio (gratuita)</label>
+          <input type="password" id="geminiKey" placeholder="AIza...">
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Ottieni chiave gratuita →</a>
+        </div>
+      </div>
+
+      <button id="startBtn" class="btn-primary" disabled>
+        🚀 Traduci
+      </button>
+    </section>
+
+    <!-- Progress -->
+    <section id="progressSection" class="section hidden">
+      <h2 class="section-title">📊 Progresso</h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar__fill" id="progressFill"></div>
+          <span class="progress-bar__text" id="progressText">0%</span>
+        </div>
+      </div>
+      <div class="progress-stats">
+        <div class="stat">
+          <span class="stat__label">Posizione</span>
+          <span class="stat__value" id="statPosition">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Parole tradotte</span>
+          <span class="stat__value" id="statWords">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Velocità</span>
+          <span class="stat__value" id="statSpeed">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Tempo stimato</span>
+          <span class="stat__value" id="statEta">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Engine</span>
+          <span class="stat__value" id="statEngine">—</span>
+        </div>
+        <div class="stat">
+          <span class="stat__label">Errori</span>
+          <span class="stat__value" id="statErrors">0</span>
+        </div>
+      </div>
+
+      <!-- Live Preview -->
+      <details class="preview-toggle" id="previewToggle">
+        <summary>👁️ Anteprima live</summary>
+        <div class="preview-panels">
+          <div class="preview-panel">
+            <h3>Originale</h3>
+            <div class="preview-text" id="previewOriginal">—</div>
+          </div>
+          <div class="preview-panel">
+            <h3>Tradotto</h3>
+            <div class="preview-text" id="previewTranslated">—</div>
+          </div>
+        </div>
+      </details>
+
+      <button id="cancelBtn" class="btn-secondary">✕ Annulla</button>
+    </section>
+
+    <!-- Complete -->
+    <section id="completeSection" class="section hidden">
+      <div class="complete-card">
+        <div class="complete-icon">✅</div>
+        <h2>Traduzione completata!</h2>
+        <div class="complete-stats" id="completeStats"></div>
+        <button id="downloadBtn" class="btn-primary">
+          ⬇️ Scarica file tradotto
+        </button>
+        <button id="newFileBtn" class="btn-secondary">
+          📄 Traduci un altro file
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>100% gratuito · Nessun dato caricato su server · <a href="https://github.com" target="_blank" rel="noopener">GitHub</a></p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
